@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <com.google.android.maps.MapView
+        android:id="@+id/mapview"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight = "1"
+        
+        android:clickable="true"
+        android:apiKey="0UED5vq4bCFFS-dtm2uzYQJl9u5-PlY8MmGo4nw" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical" >
+
+	    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	        android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+	        >
+			<EditText
+			    android:id="@+id/address_bar"
+		        android:layout_width="0dp"
+		        android:layout_weight="1"
+	        	android:layout_height="wrap_content"
+	        	android:hint="@string/address_bar"
+        	/>
+	        <ImageButton
+		        android:id="@+id/address_button"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:src="@drawable/crosshair"
+	        	android:onClick="navigateButtonPressed"
+		        android:contentDescription="@string/address_button_desc" />
+	        
+	        
+	    </LinearLayout>
+
+	    
+	    
+        <Button
+	       android:id="@+id/parkMeNow"
+	       android:layout_width="match_parent"
+	       android:layout_height="wrap_content"
+	       android:text="@string/park_me_now"
+	       android:onClick="parkMeNow" />
+    </LinearLayout>
+
+    
+
+</LinearLayout>

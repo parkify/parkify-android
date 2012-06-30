@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	        android:id="@+id/time_bar_container"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:paddingLeft="4dp"
+		    android:paddingRight="4dp"
+		    android:orientation="vertical" />
+        
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingLeft="4dp"
+	    android:paddingRight="4dp"
+	    android:paddingTop="4dp"
+	    android:paddingBottom="4dp"
+	    android:orientation="vertical"
+        android:background="@drawable/full_info_border" >
+        
+        <TextView
+            android:id="@+id/info_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="No Info" />
+        <TextView
+            android:id="@+id/desc_display"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="No Desc" />
+        
+    </LinearLayout>
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical"
+        >
+	    <TextView android:id="@+id/time_display"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:gravity="center_horizontal"
+		    android:text="Haha :3" />
+        <TextView android:id="@+id/cost_display"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:gravity="center_horizontal"
+		    android:text="Buying stuff...." />
+    </LinearLayout>
+    
+</LinearLayout>

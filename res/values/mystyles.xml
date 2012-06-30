@@ -1,0 +1,12 @@
+<resources>
+<style name="cyan_edittext" parent="@android:style/Widget.EditText">
+ 	<item name="android:focusable">true</item>
+ 	<item name="android:focusableInTouchMode">true</item>
+ 	<item name="android:clickable">true</item>
+ 	<item name="android:background">@drawable/cyan_edit_text</item>
+ 	<!-- <item name="android:textColor">@color/state_list</item>  -->
+ 	<item name="android:gravity">center_vertical</item>
+ 	<!-- <item name="android:textColorHint">@color/default_text_color</item> -->
+ 	<!-- <item name="android:textColorHighlight">@color/transparent_cyan</item>  -->
+ </style>
+ </resources>

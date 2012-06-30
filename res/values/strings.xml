@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, AngelHackActivity!</string>
+    <string name="app_name">Parkify</string>
+    <string name="park_me_now">PARK ME NOW!</string>
+    <string name="address_bar">Enter address</string>
+    <string name="address_button_desc">Locate!</string>
+    <string name="local_service_started">Local Service Started</string>
+    <string name="local_service_label">Local Service Label</string>
+    <string name="local_service_stopped">Local Service Stopped</string>
+
+</resources>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content" 
+    android:layout_height="wrap_content" 
+    android:background="@drawable/info_border"
+    >
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/info_text"
+	android:layout_width="25dip" android:layout_height="25dip"
+	android:textColor="#ADD8E6" />
+</LinearLayout>   
+-->
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content" 
+    	android:layout_height="wrap_content" 
+    	android:background="@drawable/info_border"
+    	android:orientation="vertical"
+    	>
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:id="@+id/info_text"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:textColor="#ADD8E6"
+		android:textSize="12sp" 
+		android:text="TESTING!!!"/>
+
+    <Button
+        android:id="@+id/button_check_spot"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="CheckSpot"
+        android:text="Check Spot" />
+
+    </LinearLayout>
+<!-- 
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    
+	<TextView android:id="@+id/infoText"
+        android:layout_width="80dp"
+       	android:layout_height="wrap_content"
+		android:text="DETAILS!!!" />
+       
+</LinearLayout>
+-->
