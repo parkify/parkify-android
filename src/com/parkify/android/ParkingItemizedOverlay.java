@@ -46,7 +46,7 @@ public class ParkingItemizedOverlay extends ItemizedOverlay {
     protected boolean onTap(int index) {
 		super.onTap(index);
 		
-		angelHack.map.removeView(angelHack.popup);
+		angelHack.mapParking.removeView(angelHack.popParkingInfo);
 		
 		OverlayItem item = mOverlays.get(index);
 		
@@ -60,8 +60,8 @@ public class ParkingItemizedOverlay extends ItemizedOverlay {
 
 		
 
-		angelHack.map.addView(angelHack.popup, mapParams);
-		TextView infoText = (TextView)angelHack.popup.findViewById(R.id.info_text);
+		angelHack.mapParking.addView(angelHack.popParkingInfo, mapParams);
+		TextView infoText = (TextView)angelHack.popParkingInfo.findViewById(R.id.info_text);
 		
 		angelHack.currentSpotID = Integer.parseInt(item.getSnippet());
 		ParkingSpot spot = angelHack.mParkingSpots.get(angelHack.currentSpotID);

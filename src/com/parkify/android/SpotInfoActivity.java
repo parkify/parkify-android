@@ -50,7 +50,7 @@ public class SpotInfoActivity extends Activity {
 		// create RangeSeekBar as Integer range between 20 and 75
 		RangeSeekBar<Long> seekBar = new RangeSeekBar<Long>(timeBegin, timeEnd, 30*60000L, this);
 		seekBar.setOnRangeSeekBarChangeListener(new OnRangeSeekBarChangeListener<Long>() {
-		        @Override
+		        //@Override
 		        public void onRangeSeekBarValuesChanged(RangeSeekBar<?> bar, Long minValue, Long maxValue) {
 		                // handle changed range values
 		        		//textView.setText(String.format("User selected new range values: MIN=%d, MAX=%d", minValue, maxValue));

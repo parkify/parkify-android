@@ -23,6 +23,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -32,22 +33,27 @@ import android.widget.ZoomButtonsController.OnZoomListener;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.parkify.android.R;
 
+/**
+ * Displays a map filled with parking spaces. This is the main activity used to
+ * find available parking spaces.
+ */
 public class ParkingMapActivity extends MapActivity {
-	MapView map=null;
-	List<Overlay> mapOverlays;
 	Drawable drawFreeParkingPin;
 	Drawable drawTakenParkingPin;
-	ParkingItemizedOverlay freeParkingOverlay;
-	ParkingItemizedOverlay takenParkingOverlay;
-	View popup;
+	MapView mapParking=null;
+	List<Overlay> overlayMap;
+	ParkingItemizedOverlay overlayFreeParking;
+	ParkingItemizedOverlay overlayTakenParking;
+	View popParkingInfo;
+	MyLocationOverlay myLocationOverlay;
+	Geocoder geoCoder;
 	
 	int currentSpotID = -1;
 	
@@ -55,9 +61,9 @@ public class ParkingMapActivity extends MapActivity {
 	int maxStreetZoom;
 	
 	
-	public final static String EXTRA_MESSAGE = "com.sl.angelhack.MESSAGE";
+	public final static String EXTRA_MESSAGE = "com.parkify.android.MESSAGE";
 	private static final String MAP = "MAPMAPMAP";
-	public final static String EXTRA_SPOT = "com.sl.angelhack.SPOT";
+	public final static String EXTRA_SPOT = "com.parkify.android.SPOT";
 	
 	//Parking spots:
 	HashMap<Integer, ParkingSpot> mParkingSpots;
@@ -67,34 +73,36 @@ public class ParkingMapActivity extends MapActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        map = (MapView)findViewById(R.id.mapview);
-        map.getController().setCenter(getPoint(37.872679, -122.266797));
-        map.getController().setZoom(17);
-        map.setBuiltInZoomControls(true);
+        mapParking = (MapView)findViewById(R.id.mapview);
+        mapParking.getController().setCenter(getPoint(37.872679, -122.266797));
+        mapParking.getController().setZoom(17);
+        mapParking.setBuiltInZoomControls(true);
         
-        ZoomButtonsController zoomButton = map.getZoomButtonsController();
+        geoCoder = new Geocoder(this, Locale.getDefault());
+        
+        ZoomButtonsController zoomButton = mapParking.getZoomButtonsController();
         OnZoomListener listener = new OnZoomListener() {
-        	   @Override
+        	   //@Override
         	   public void onVisibilityChanged(boolean arg0) {
         	    // TODO Auto-generated method stub
 
         	   }
-        	   @Override
+        	   //@Override
         	   public void onZoom(boolean arg0) {
         		   if(arg0) { //zoom in
-            		   int prevZoomLevel = map.getZoomLevel();
-            		   if (prevZoomLevel < map.getMaxZoomLevel()) {
-            			   map.getController().zoomIn();
-            			   handleStreetSatelite(map.getZoomLevel());
-            			   map.invalidate();
+            		   int prevZoomLevel = mapParking.getZoomLevel();
+            		   if (prevZoomLevel < mapParking.getMaxZoomLevel()) {
+            			   mapParking.getController().zoomIn();
+            			   handleStreetSatelite(mapParking.getZoomLevel());
+            			   mapParking.invalidate();
             		   }
         			   
         		   } else { //zoom out
-        			   int prevZoomLevel = map.getZoomLevel();
+        			   int prevZoomLevel = mapParking.getZoomLevel();
         			   if (prevZoomLevel > 1) {
-        				   map.getController().zoomOut();
-            			   handleStreetSatelite(map.getZoomLevel());
-            			   map.invalidate();
+        				   mapParking.getController().zoomOut();
+            			   handleStreetSatelite(mapParking.getZoomLevel());
+            			   mapParking.invalidate();
         			   }
         		   }
         	   }
@@ -104,21 +112,26 @@ public class ParkingMapActivity extends MapActivity {
         ImageButton btn=(ImageButton)findViewById(R.id.address_button);
         btn.setBackgroundColor(Color.TRANSPARENT);
         
-        mapOverlays = map.getOverlays();
+        overlayMap = mapParking.getOverlays();
         drawFreeParkingPin = this.getResources().getDrawable(R.drawable.parking_icon_free);
         drawTakenParkingPin = this.getResources().getDrawable(R.drawable.parking_icon_taken);
-        freeParkingOverlay = new ParkingItemizedOverlay(this, drawFreeParkingPin);
-        takenParkingOverlay = new ParkingItemizedOverlay(this, drawTakenParkingPin);
+        overlayFreeParking = new ParkingItemizedOverlay(this, drawFreeParkingPin);
+        overlayTakenParking = new ParkingItemizedOverlay(this, drawTakenParkingPin);
         
         
         //map.setStreetView(true);
         bSateliteView = false;
-        map.setSatellite(bSateliteView);
-        maxStreetZoom = map.getMaxZoomLevel();
+        mapParking.setSatellite(bSateliteView);
+        maxStreetZoom = mapParking.getMaxZoomLevel();
         
+        myLocationOverlay = new MyLocationOverlay(this, mapParking);
+        myLocationOverlay.enableMyLocation();
         
-        mapOverlays.add(takenParkingOverlay);
-        mapOverlays.add(freeParkingOverlay);
+
+        overlayMap.add(myLocationOverlay);
+        overlayMap.add(overlayTakenParking);
+        overlayMap.add(overlayFreeParking);
+        
     	
         // To be loaded from server...
         
@@ -130,7 +143,7 @@ public class ParkingMapActivity extends MapActivity {
         UpdateParkingOverlay();
 
         
-        popup = getLayoutInflater().inflate(R.layout.spot_popup, map, false);
+        popParkingInfo = getLayoutInflater().inflate(R.layout.spot_popup, mapParking, false);
         //Use MapView.LayoutParams to position the popup with respect to GeoPoint in the ItemizedOverlay< OverlayItem >::onTap method. Popup will scroll automatically (without any additional code) when user scrolls the map. Basically popup gets tied to a GeoPoint, if user zooms, popup's position gets adjusted automatically.
    
         MapView.LayoutParams mapParams = new MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 
@@ -142,7 +155,7 @@ public class ParkingMapActivity extends MapActivity {
         
         
         
-        map.addView(popup, mapParams);
+        mapParking.addView(popParkingInfo, mapParams);
         TextView infoText = (TextView)findViewById(R.id.info_text);
         infoText.setText("HAHA :3");
         
@@ -156,7 +169,42 @@ public class ParkingMapActivity extends MapActivity {
 		intent.putExtra("urlpath", "http://swooplot.herokuapp.com/parking_spots.html");
 		startService(intent);
 		
-		map.getOverlays().add(new TouchOverlay());
+		mapParking.getOverlays().add(new TouchOverlay());
+		
+		
+		final EditText etAddressBar = (EditText) findViewById(R.id.address_bar);
+		etAddressBar.setOnEditorActionListener(new TextView.OnEditorActionListener() { 
+		    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) { 
+		    	Log.i(MAP, String.format("Action: %d", actionId));
+		        if (actionId == EditorInfo.IME_ACTION_DONE) { 
+		        	String strAddress = etAddressBar.getText().toString();
+		        	if(strAddress.length() == 0) {
+		        		return false;
+		        	}
+		        	Log.i(MAP, String.format("Actually clicked something."));
+		        	try {
+		                List<Address> addresses = geoCoder.getFromLocationName(
+		                		strAddress , 5);
+		                if (addresses.size() > 0) {
+		                	Log.i(MAP, String.format("Actually found something."));
+		                    GeoPoint p = new GeoPoint(
+		                            (int) (addresses.get(0).getLatitude() * 1E6), 
+		                            (int) (addresses.get(0).getLongitude() * 1E6));
+		                    mapParking.getController().animateTo(p);    
+		                    mapParking.invalidate();
+		                }    
+		            } catch (IOException e) {
+		                e.printStackTrace();
+		            }
+		            
+		        } 
+		        return false; 
+		    } 
+		}); 
+		
+		
+		
+		
     }
     
     @Override
@@ -171,20 +219,20 @@ public class ParkingMapActivity extends MapActivity {
     
     private void UpdateParkingOverlay() {
     	
-    	freeParkingOverlay.clear();
-    	takenParkingOverlay.clear();
+    	overlayFreeParking.clear();
+    	overlayTakenParking.clear();
     	
     	for (Iterator<ParkingSpot> iterPark = mParkingSpots.values().iterator();
     			iterPark.hasNext();) {
     		ParkingSpot spot = iterPark.next();
     		OverlayItem overlayItem = spot.makeOverlayItem();
     		if(spot.isFree()) {
-        		freeParkingOverlay.addOverlay(overlayItem);
+        		overlayFreeParking.addOverlay(overlayItem);
     		} else {
-    			takenParkingOverlay.addOverlay(overlayItem);
+    			overlayTakenParking.addOverlay(overlayItem);
     		}
     	}
-    	map.invalidate();
+    	mapParking.invalidate();
     }
     
     public void CheckSpot(View view) {
@@ -197,6 +245,18 @@ public class ParkingMapActivity extends MapActivity {
     }
     
     public void navigateButtonPressed(View view) {
+    	
+    	GeoPoint myLocation = myLocationOverlay.getMyLocation();
+    	
+    	if (myLocation != null) {
+    		mapParking.getController().animateTo(myLocation);    
+            mapParking.invalidate();
+    	} else {
+    		Toast.makeText(ParkingMapActivity.this,
+    				"Unable to find current location.", Toast.LENGTH_SHORT)
+    				.show();
+    	}
+    	/*
     	EditText editAddress = (EditText)findViewById(R.id.address_bar);
     	String strAddress = editAddress.getText().toString();
     	if(strAddress.length() == 0) {
@@ -212,12 +272,13 @@ public class ParkingMapActivity extends MapActivity {
                 GeoPoint p = new GeoPoint(
                         (int) (addresses.get(0).getLatitude() * 1E6), 
                         (int) (addresses.get(0).getLongitude() * 1E6));
-                map.getController().animateTo(p);    
-                map.invalidate();
+                mapParking.getController().animateTo(p);    
+                mapParking.invalidate();
             }    
         } catch (IOException e) {
             e.printStackTrace();
         }
+        */
     }
     
     /** Called when the user selects the "PARK ME NOW" button */
@@ -265,11 +326,11 @@ public class ParkingMapActivity extends MapActivity {
         public boolean onTouchEvent(MotionEvent event, MapView mapview) {
             if (event.getAction() == 1) {
                 if (lastZoomLevel == -1)
-                    lastZoomLevel = map.getZoomLevel();
+                    lastZoomLevel = mapParking.getZoomLevel();
 
-                if (map.getZoomLevel() != lastZoomLevel) {
-                	handleStreetSatelite(map.getZoomLevel());
-                    lastZoomLevel = map.getZoomLevel();
+                if (mapParking.getZoomLevel() != lastZoomLevel) {
+                	handleStreetSatelite(mapParking.getZoomLevel());
+                    lastZoomLevel = mapParking.getZoomLevel();
                 }
             }
             return false;
@@ -287,7 +348,7 @@ public class ParkingMapActivity extends MapActivity {
     		//switch if level < maxStreetZoom    		
     		if (zoomLevel < maxStreetZoom) {
     			bSateliteView = false;
-    			map.setSatellite(bSateliteView);
+    			mapParking.setSatellite(bSateliteView);
     		} else {
     			;
     		}
@@ -295,7 +356,7 @@ public class ParkingMapActivity extends MapActivity {
     		//switch if level >= maxStreetZoom
     		if (zoomLevel >= maxStreetZoom) {
     			bSateliteView = true;
-    			map.setSatellite(bSateliteView);
+    			mapParking.setSatellite(bSateliteView);
     		} else {
     			;
     		}

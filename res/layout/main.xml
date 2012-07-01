@@ -27,6 +27,7 @@
 		        android:layout_weight="1"
 	        	android:layout_height="wrap_content"
 	        	android:hint="@string/address_bar"
+	        	android:singleLine="true"
         	/>
 	        <ImageButton
 		        android:id="@+id/address_button"
